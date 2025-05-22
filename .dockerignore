@@ -1,0 +1,8 @@
+.git
+node_modules
+.venv
+*.log
+*.tmp
+*.zip
+*.cache
+.DS_Store

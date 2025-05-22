@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  chrome:
+    build: .
+    image: chrome-with-extensions
+    ports:
+      - "4444:4444"  # Selenium port
+      - "5900:5900"  # VNC port (for debugging)
+    volumes:
+      - ./extensions:/home/seluser/extensions
+    environment:
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_MAX_SESSIONS=5
+      - SE_VNC_NO_PASSWORD=1
+    shm_size: '3gb'  # Important for Chrome
+    environment:
+      - SE_OPTS="--disable-dev-shm-usage"
