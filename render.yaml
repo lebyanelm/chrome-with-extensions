@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: chrome-with-extensions
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: PORT1
+        value: 4444
+      - key: PORT2
+        value: 5900

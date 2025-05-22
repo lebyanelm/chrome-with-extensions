@@ -8,6 +8,14 @@ USER seluser
 ENV DISPLAY=:99
 ENV CHROME_DRIVER_VERSION=latest
 ENV DISABLE_DEV_SHM=true
+ENV SE_NODE_OVERRIDE_MAX_SESSIONS=true
+ENV SE_NODE_MAX_SESSIONS=2
+ENV SE_VNC_NO_PASSWORD=1
+ENV SE_OPTS="--disable-dev-shm-usage"
+
+EXPOSE 4444
+EXPOSE 5900
 
 # Copy extensions
+RUN mkdir /home/seluser/extensions
 COPY ./extensions /home/seluser/extensions
