@@ -1,12 +1,8 @@
 services:
   - type: web
-    name: chrome-with-extensions
+    name: selenium-server
     env: docker
+    dockerfilePath: ./Dockerfile
     plan: free
-    autoDeploy: true
-    dockerfilePath: Dockerfile
-    envVars:
-      - key: PORT1
-        value: 4444
-      - key: PORT2
-        value: 5900
+    ports:
+      - port: 4444
