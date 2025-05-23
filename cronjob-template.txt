@@ -1,0 +1,1 @@
+30 * * * * sudo python3 /home/ubuntu/chrome-with-extensions/docker-manager.py >> /var/log/docker-manager.log 2>&1

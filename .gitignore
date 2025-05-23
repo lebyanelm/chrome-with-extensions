@@ -1,2 +1,3 @@
-*.prem
+*.pem
 *.env
+.venv
