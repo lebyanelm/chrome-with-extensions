@@ -17,31 +17,36 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 
+""" SETUP LOGGING """
+logging.basicConfig(level = logging.INFO)
+
+
 # Database connection
 """" Initialize firestore database """
 service_account = credentials.Certificate("service-account.json")
 firebase_admin.initialize_app(service_account)
 database = firestore.client()
+logging.info("Database has been connected.")
 
 
-# Selenium web processing
+""" SELENIUM SETUP PARAMETER """
 driver = None
-MAX_ELEMENT_TIMEOUT = 60
+MAX_ELEMENT_TIMEOUT = 120
 VEE_PROXY_VPN_EXTENSION_PATH = os.path.abspath("./vee_proxy_vpn")
 CAPTCHA_SOLVER_EXTENSION_PATH = os.path.abspath("./busta_captcha_solver")
 TOKEN_REFRESH_TIMEOUT = 3600 # 1 hour timeout refresh rate
 
 
-# Google TTS endpoint to be used to synthesize audio
+""" GOOGLE TTS ENDPOINT AND LAST SAVED TOKEN """
 GOOGLE_TTS_ENDPOINT = os.getenv("GOOGLE_TTS_ENDPOINT")
-GOOGLE_TOKEN = database\
-                .collection("credentials")\
-                    .document("google-tts")\
-                        .get().to_dict()["key"]
+GOOGLE_TOKEN = database.collection("credentials").document("google-tts").get().to_dict()["key"]
+logging.info("Last saved token has been loaded.")
 
 
 """ Audio transcription. """
-whisper_model = whisper.load_model("base")
+whisper_model_variant = "tiny"
+whisper_model = whisper.load_model(whisper_model_variant)
+logging.info(f"Whisper model {whisper_model_variant} has been loaded.")
 
 
 vpn_connection_attempted = False
@@ -53,6 +58,17 @@ def connect_to_vpn():
         
         # Determine the extension ID of VeePN
         loaded_extensions = get_loaded_extensions()
+        logging.info(f"Loaded extensions are: {loaded_extensions}")
+        
+        window_handles = driver.window_handles
+        logging.info(f"Checking VeePN welcome page open: {len(window_handles)}")
+        if len(window_handles) > 1:
+            logging.info("VeePN welcome page has been opened attempting to close.")
+            driver.switch_to.window(window_handles[-1])
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+            logging.info("VeePN welcome page has been closed. Proceeding...")
+
         veepn_id = None
         for loaded_extension in loaded_extensions:
             if "VeePN" in loaded_extension["name"]:
@@ -96,7 +112,6 @@ def connect_to_vpn():
             )
             current_tabs = driver.window_handles
             if len(current_tabs) > 1:
-                close_window(1)
                 switch_to_window(0)
             return True
         except:
@@ -258,7 +273,7 @@ def get_captcha_solution():
     )
     audio_url = audio_link_button.get_attribute("href")
     audio_file_path = download_file(audio_url)
-    solution_text = whisper_model.trabscribe(audio_file_path)
+    solution_text = whisper_model.transcribe(audio_file_path)
     # Delete the audio file to clean up.
     os.remove(audio_file_path)
     return solution_text["text"]
@@ -271,24 +286,26 @@ def keep_token_refreshed():
             while is_token_refreshed == False:
                 global driver
                 global vpn_connection_attempted
-
+                
+                logging.info("Updating process status.")
                 set_process_status("active")
 
+                """ SET CHROME EXTENSIONS """
                 chrome_options = webdriver.ChromeOptions()
-                # chrome_options.add_argument("--headless=new")  # or "--headless=chrome"
                 chrome_options.add_argument("--no-sandbox")
+                chrome_options.add_argument("--load-extension=/home/seluser/extensions/veepn")
                 chrome_options.add_argument("--disable-dev-shm-usage")
-                chrome_options.add_argument("--disable-gpu")  # Optional, but sometimes helps
                 chrome_options.add_argument("--disable-software-rasterizer")
-                chrome_options.add_argument("--disable-accelerated-2d-canvas")
-                chrome_options.add_argument("--disable-dev-shm-usage")
                 chrome_options.add_argument("--window-size=1920,1080")
-                chrome_options.add_argument(
-                    f"--load-extension=/home/seluser/extensions/veepn")
+                chrome_options.add_argument("--disable-accelerated-2d-canvas")
+                logging.info("Chrome arguments updated via chrome options.")
+
+                """ CONNECT TO THE REMOTE CHROME WEB DRIVER """
                 driver = webdriver.Remote(
                                 command_executor='http://localhost:4444/wd/hub',
                                 options = chrome_options)
-                print("Driver started:", driver)                
+                logging.info(f"Web driver has been connected: {driver}")                
+                logging.info("Web driver set up completed.")
 
                 # Attempt to connect to a VPN to ensure IP is rotated.
                 vpn_connected = False
@@ -355,8 +372,9 @@ def download_file(url, download_path=os.path.abspath("./recaptcha-audios")):
         bar.update(len(response.content))
     return output_path
 
-
 def set_process_status(status = "active"):
     with open("jobstatus", "w") as jobstatus:
         jobstatus.write(status)
         jobstatus.close()
+
+keep_token_refreshed()
