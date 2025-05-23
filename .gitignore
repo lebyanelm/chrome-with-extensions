@@ -1,3 +1,4 @@
 *.pem
 *.env
 .venv
+service-account.json
