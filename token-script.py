@@ -286,7 +286,7 @@ def keep_token_refreshed():
                 chrome_options.add_argument(
                     f"--load-extension=/home/seluser/extensions/veepn")
                 driver = webdriver.Remote(
-                                command_executor='http://16.170.108.210/wd/hub',
+                                command_executor='http://localhost:4444/wd/hub',
                                 options = chrome_options)
                 print("Driver started:", driver)                
 
