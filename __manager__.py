@@ -23,9 +23,7 @@ from selenium.webdriver.common.by import By
 
 
 """ SETUP LOGGING """
-logging.basicConfig(filename = "logfile",
-                    filemode= "a",
-                    level = logging.DEBUG if os.environ["LOG_LEVEL"] == "debug" else logging.INFO)
+logging.basicConfig(level = logging.DEBUG if os.environ["LOG_LEVEL"] == "debug" else logging.INFO)
 logging.info("Logging basic config completed.")
 
 
