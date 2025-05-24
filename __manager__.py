@@ -316,11 +316,10 @@ def start_process():
     """ REFRESH TOKEN AND UPDATE RECORDS """
     get_new_token()
     get_new_token()
-    if len(GOOGLE_TTS_ENDPOINT) > 600:
-        logging.info(f"New refreshed token: {GOOGLE_TTS_ENDPOINT[-10:]}")
-        creds = database.collection("credentials")
-        tts_cred = creds.document("google-tts")
-        tts_cred.set(dict(endpoint = GOOGLE_TTS_ENDPOINT))
+    logging.info(f"New refreshed token: {GOOGLE_TTS_ENDPOINT[-10:]}")
+    creds = database.collection("credentials")
+    tts_cred = creds.document("google-tts")
+    tts_cred.set(dict(endpoint = GOOGLE_TTS_ENDPOINT))
 
         
 def end_process():
