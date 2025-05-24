@@ -3,6 +3,8 @@ import subprocess
 import random
 import nanoid
 import requests
+import httpx
+import json
 import os
 import signal
 import sys
@@ -150,7 +152,6 @@ def get_new_token():
     waiter = WebDriverWait(driver, MAX_ELEMENT_TIMEOUT)
 
     driver.get("https://www.gstatic.com/cloud-site-ux/text_to_speech/text_to_speech.min.html")
-    driver.save_screenshot("google-tts.png")
     driver.execute_script("""
         (function(open) {
         XMLHttpRequest.prototype.open = function(method, url) {
@@ -206,7 +207,6 @@ def get_new_token():
 
 
 def open_captcha_challenge():
-    driver.save_screenshot("open_captcha_challenge.png")
     recaptcha_iframe = WebDriverWait(driver, MAX_ELEMENT_TIMEOUT).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[src*='recaptcha']"))
     )
@@ -346,6 +346,50 @@ def process_clean_up():
         driver.quit()
     if database:
         database.close()
+        
+        
+def test_audio_synthesis(token: str) -> requests.Response:
+    try:
+        payload = {
+            "audioConfig": {
+                "audioEncoding": "MP3",
+                "effectsProfileId": [
+                    "large-home-entertainment-class-device"
+                ],
+                "pitch": 0,
+                "speakingRate": 1
+            },
+            "input": {
+                "text": "This is a test."
+            },
+            "voice": {
+                "languageCode": "en-US",
+                "name": "en-US-Chirp3-HD-Gacrux"
+            }
+        }
+        headers = {
+            "Accept": "*/*",
+            "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
+            "Content-Type": "text/plain;charset=UTF-8",
+            "DNT": "1",
+            "Origin": "https://www.gstatic.com",
+            "Referer": "https://www.gstatic.com/",
+            "Sec-CH-UA": '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+            "Sec-CH-UA-Mobile": "?0",
+            "Sec-CH-UA-Platform": '"Linux"',
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "cross-site",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+        }
+        response = httpx.post(f"https://cxl-services.appspot.com/proxy?url=https://texttospeech.googleapis.com/v1beta1/text:synthesize&token={token}", headers=headers, content=json.dumps(payload))
+        if response.is_error == False:
+            return True
+        logging.info(response.text)
+        return False
+    except:
+        logging.info(traceback.format_exc())
+        return False
 
 
 """ SETUP SCRIPT EXIT EVENTS """
@@ -369,10 +413,12 @@ try:
     TOKEN_REFRESH_TIMEOUT = 3600 # 1 hour timeout refresh rate
 
     """ GOOGLE TTS ENDPOINT AND LAST SAVED TOKEN """
-    GOOGLE_TTS_ENDPOINT = os.getenv("GOOGLE_TTS_ENDPOINT")
     GOOGLE_TOKEN = database.collection("credentials").document("google-tts").get().to_dict()["key"]
-    logging.info("Last saved token has been loaded.")
-    logging.info(f"Current token: {GOOGLE_TOKEN[-10:]}")
+    is_token_active = test_audio_synthesis(GOOGLE_TOKEN)
+    logging.info(f"Last saved token has been loaded: {GOOGLE_TOKEN[-10:]}")
+    if is_token_active:
+        logging.info("Token is still active and valid, quitting...")
+        sys.exit(0)
 
     """ OPENAI-WHISPER SETUP """
     whisper_model_variant = "tiny"
