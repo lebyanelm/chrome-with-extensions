@@ -4,7 +4,8 @@ logging.basicConfig(level = logging.INFO)
 
 
 """ Determine if therer's a current job running. """
-with open("/home/lebyanelm/chrome-with-extensions/jobstatus") as jobstatus_file:
+USERNAME = subprocess.run("ls /home/", shell = True, capture_output = True, text = True).stdout.strip()
+with open(f"/home/{USERNAME}/chrome-with-extensions/jobstatus") as jobstatus_file:
     if jobstatus_file.read() == "active":
         logging.info("An active job exists, quitting...")
         quit(0)
