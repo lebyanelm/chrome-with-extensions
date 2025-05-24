@@ -368,6 +368,7 @@ def test_audio_synthesis(endpoint: str) -> requests.Response:
         }
         response = httpx.post(endpoint, headers=headers, content=json.dumps(payload))
         if response.is_error == False:
+            logging.info(f"Response: {response.text}")
             return True
         logging.info(response.text)
         return False
