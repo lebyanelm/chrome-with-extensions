@@ -331,7 +331,8 @@ def end_process():
         database.close()
         
         
-def test_audio_synthesis(token: str) -> requests.Response:
+def test_audio_synthesis(endpoint: str) -> requests.Response:
+    logging.info(f"Testing endpoint: {endpoint}")
     try:
         payload = {
             "audioConfig": {
@@ -365,7 +366,7 @@ def test_audio_synthesis(token: str) -> requests.Response:
             "Sec-Fetch-Site": "cross-site",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
         }
-        response = httpx.post(f"https://cxl-services.appspot.com/proxy?url=https://texttospeech.googleapis.com/v1beta1/text:synthesize&token={token}", headers=headers, content=json.dumps(payload))
+        response = httpx.post(endpoint, headers=headers, content=json.dumps(payload))
         if response.is_error == False:
             return True
         logging.info(response.text)
