@@ -3,3 +3,4 @@
 .venv
 service-account.json
 *.log
+logfile

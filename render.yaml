@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: selenium-server
-    env: docker
-    dockerfilePath: ./Dockerfile
-    plan: free
-    ports:
-      - port: 4444

@@ -23,13 +23,14 @@ from selenium.webdriver.common.by import By
 
 
 """ SETUP LOGGING """
-logging.basicConfig(level = logging.INFO)
+logging.basicConfig(filename = "logfile",
+                    filemode= "a",
+                    level = logging.DEBUG if os.environ["LOG_LEVEL"] == "debug" else logging.INFO)
 logging.info("Logging basic config completed.")
 
 
-""" GET THE USER DIR """
-USERNAME = subprocess.run("ls /home/", shell=True, capture_output=True, text=True).stdout.strip()
-WORK_DIR = f"/home/{USERNAME}/chrome-with-extensions"
+""" GET THE WORK DIR """
+WORK_DIR = os.environ["WORK_DIR"]
 
 
 vpn_connection_attempted = False
@@ -294,9 +295,6 @@ def download_file(url, download_path=os.path.join(WORK_DIR, "recaptcha-audios"))
 def start_process():
     global driver
 
-    logging.info("Updating process status.")
-    set_process_status("active")
-
     """ SET CHROME EXTENSIONS """
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--no-sandbox")
@@ -326,22 +324,8 @@ def start_process():
         tts_cred = creds.document("google-tts")
         tts_cred.update(dict(key = GOOGLE_TOKEN))
 
-    """ RESET PROCESS STATUS """
-    set_process_status("inactive")
-    if driver:
-        driver.quit()
-        driver = None
-
-
-def set_process_status(status = "active"):
-    with open(os.path.join(WORK_DIR, "jobstatus"), "w") as jobstatus:
-        jobstatus.write(status)
-        jobstatus.close()
-        logging.info(f"Job status has been set to: {status}")
         
-        
-def process_clean_up():
-    set_process_status("inactive")
+def end_process():
     if driver:
         driver.quit()
     if database:
@@ -395,7 +379,7 @@ def test_audio_synthesis(token: str) -> requests.Response:
 """ SETUP SCRIPT EXIT EVENTS """
 def on_sigterm(_, __):
     logging.info("Received termination signal")
-    process_clean_up()
+    end_process()
     sys.exit(0)
 signal.signal(signal.SIGTERM, on_sigterm)
 signal.signal(signal.SIGINT, on_sigterm)
@@ -429,9 +413,11 @@ try:
     start_process()
 except Exception as e:
     logging.info(traceback.format_exc())
+    end_process()
 except KeyboardInterrupt:
     logging.info("Script ended voluntarily by user.")
-    process_clean_up()
+    end_process()
 finally:
     logging.info("Clean up completed.")
+    end_process()
     sys.exit(0)

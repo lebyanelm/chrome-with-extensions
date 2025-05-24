@@ -1,8 +1,10 @@
 .git
 node_modules
 .venv
+logfile
 *.log
 *.tmp
 *.zip
 *.cache
+*.pem
 .DS_Store
