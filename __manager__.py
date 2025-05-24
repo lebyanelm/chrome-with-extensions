@@ -324,6 +324,8 @@ def start_process():
 
         
 def end_process():
+    global driver
+    global database
     if driver:
         driver.quit()
     if database:

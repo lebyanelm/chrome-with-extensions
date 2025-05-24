@@ -9,5 +9,4 @@ until curl -s http://localhost:4444/wd/hub/status | grep -q '"ready": true'; do
 done
 
 # Now run your script
-echo "Selenium is ready. Running your script..."
 python3 /home/seluser/token-manager/__manager__.py
