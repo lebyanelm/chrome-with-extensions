@@ -1,4 +1,5 @@
 import time
+import datetime
 import subprocess
 import random
 import nanoid
@@ -319,7 +320,7 @@ def start_process():
     logging.info(f"New refreshed token: {GOOGLE_TTS_ENDPOINT[-10:]}")
     creds = database.collection("credentials")
     tts_cred = creds.document("google-tts")
-    tts_cred.set(dict(endpoint = GOOGLE_TTS_ENDPOINT))
+    tts_cred.set(dict(endpoint = GOOGLE_TTS_ENDPOINT, last_updated = f"{datetime.datetime.now()}"))
 
         
 def end_process():
