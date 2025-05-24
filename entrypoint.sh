@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # Start Selenium in background (using supervisord)
-# NOTE: This is done automatically by the base image
+/opt/bin/entry_point.sh &
 
-# Optional: Wait for WebDriver to be ready
 until curl -s http://localhost:4444/wd/hub/status | grep -q '"ready": true'; do
   echo "Waiting for Selenium WebDriver..."
   sleep 2
