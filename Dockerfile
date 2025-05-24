@@ -5,7 +5,6 @@ FROM selenium/standalone-chrome:latest
 # Install unzip if needed for extension handling
 USER root
 RUN apt-get update && apt-get install -y python3-pip ffmpeg
-USER seluser
 
 
 # SETUP ENVIRONMENT VARIABLES
@@ -24,4 +23,5 @@ RUN pip install -r /home/seluser/token-manager/requirements.txt
 
 
 # Initialise running of the scripts
+USER seluser
 CMD ["python3", "/home/seluser/__manager__.py"]
