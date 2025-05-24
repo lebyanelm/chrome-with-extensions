@@ -21,6 +21,8 @@ RUN mkdir /home/seluser/token-manager
 COPY ./ /home/seluser/token-manager
 RUN pip install -r /home/seluser/token-manager/requirements.txt
 
+EXPOSE 4444
+
 
 # Initialise running of the scripts
 CMD ["python3", "/home/seluser/token-manager/__manager__.py"]
