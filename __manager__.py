@@ -396,12 +396,12 @@ try:
     TOKEN_REFRESH_TIMEOUT = 3600 # 1 hour timeout refresh rate
 
     """ GOOGLE TTS ENDPOINT AND LAST SAVED TOKEN """
-    # GOOGLE_TOKEN = database.collection("credentials").document("google-tts").get().to_dict()["url"]
-    # is_token_active = test_audio_synthesis(GOOGLE_TOKEN)
-    # logging.info(f"Last saved token has been loaded: {GOOGLE_TOKEN[-10:]}")
-    # if is_token_active:
-    #     logging.info("Token is still active and valid, quitting...")
-    #     sys.exit(0)
+    GOOGLE_TTS_ENDPOINT = database.collection("credentials").document("google-tts").get().to_dict()["url"]
+    is_token_active = test_audio_synthesis(GOOGLE_TTS_ENDPOINT)
+    logging.info(f"Last saved token has been loaded: {GOOGLE_TTS_ENDPOINT[-10:]}")
+    if is_token_active:
+        logging.info("Token is still active and valid, quitting...")
+        sys.exit(0)
 
     """ OPENAI-WHISPER SETUP """
     whisper_model_variant = "tiny"
