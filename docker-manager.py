@@ -4,7 +4,7 @@ logging.basicConfig(level = logging.INFO)
 
 
 """ Determine if therer's a current job running. """
-with open("jobstatus") as jobstatus_file:
+with open("/home/lebyanelm/chrome-with-extensions/jobstatus") as jobstatus_file:
     if jobstatus_file.read() == "active":
         logging.info("An active job exists, quitting...")
         quit(0)
