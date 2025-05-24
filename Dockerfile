@@ -18,5 +18,4 @@ RUN pip install -r $WORK_DIR/requirements.txt
 RUN chown -R seluser:seluser $WORK_DIR
 
 USER seluser
-
-CMD ["python3", "/home/seluser/token-manager/__manager__.py"]
+ENTRYPOINT ["/home/seluser/token-manager/entrypoint.sh"]
