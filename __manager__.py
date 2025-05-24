@@ -12,6 +12,7 @@ import sys
 import traceback
 import logging
 import subprocess
+from wonderwords import RandomSentence
 import whisper
 import re
 import firebase_admin
@@ -26,6 +27,7 @@ from selenium.webdriver.common.by import By
 """ SETUP LOGGING """
 logging.basicConfig(level = logging.DEBUG if os.environ["LOG_LEVEL"] == "debug" else logging.INFO)
 logging.info("Logging basic config completed.")
+r = RandomSentence()
 
 
 """ GET THE WORK DIR """
@@ -345,7 +347,7 @@ def test_audio_synthesis(endpoint: str) -> requests.Response:
                 "speakingRate": 1
             },
             "input": {
-                "text": "Time conversion involves understanding the relationship between hours and minutes."
+                "text": r.simple_sentence()
             },
             "voice": {
                 "languageCode": "en-US",
