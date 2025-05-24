@@ -345,7 +345,7 @@ def test_audio_synthesis(endpoint: str) -> requests.Response:
                 "speakingRate": 1
             },
             "input": {
-                "text": "This is a test."
+                "text": "Time conversion involves understanding the relationship between hours and minutes."
             },
             "voice": {
                 "languageCode": "en-US",
