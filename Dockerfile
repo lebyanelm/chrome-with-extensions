@@ -16,6 +16,7 @@ COPY ./ $WORK_DIR
 RUN pip install -r $WORK_DIR/requirements.txt
 
 RUN chown -R seluser:seluser $WORK_DIR
+RUN chmod +x /home/seluser/token-manager/entrypoint.sh
 
 USER seluser
 ENTRYPOINT ["/home/seluser/token-manager/entrypoint.sh"]
