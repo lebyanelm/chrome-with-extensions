@@ -1,1 +1,1 @@
-*/10 * * * * sudo bash /home/ubuntu/chrome-with-extensions/manager.bash >> /var/log/docker-manager.log 2>&1
+*/1 * * * * sudo bash /home/ubuntu/chrome-with-extensions/manager.bash >> /var/log/docker-manager.log 2>&1
