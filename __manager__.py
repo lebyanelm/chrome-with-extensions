@@ -298,7 +298,7 @@ def start_process():
     """ SET CHROME EXTENSIONS """
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--load-extension=/home/seluser/extensions/veepn")
+    chrome_options.add_argument("--load-extension=/home/seluser/token-manager/extensions/veepn")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-software-rasterizer")
     chrome_options.add_argument("--window-size=1920,1080")
@@ -317,12 +317,12 @@ def start_process():
     
     """ REFRESH TOKEN AND UPDATE RECORDS """
     get_new_token()
-    GOOGLE_TOKEN = GOOGLE_TTS_ENDPOINT.split("token=")[-1]
-    if len(GOOGLE_TOKEN) > 600:
-        logging.info(f"New refreshed token: {GOOGLE_TOKEN[-10:]}")
+    get_new_token()
+    if len(GOOGLE_TTS_ENDPOINT) > 600:
+        logging.info(f"New refreshed token: {GOOGLE_TTS_ENDPOINT[-10:]}")
         creds = database.collection("credentials")
         tts_cred = creds.document("google-tts")
-        tts_cred.update(dict(key = GOOGLE_TOKEN))
+        tts_cred.set(dict(endpoint = GOOGLE_TTS_ENDPOINT))
 
         
 def end_process():
@@ -397,12 +397,12 @@ try:
     TOKEN_REFRESH_TIMEOUT = 3600 # 1 hour timeout refresh rate
 
     """ GOOGLE TTS ENDPOINT AND LAST SAVED TOKEN """
-    GOOGLE_TOKEN = database.collection("credentials").document("google-tts").get().to_dict()["key"]
-    is_token_active = test_audio_synthesis(GOOGLE_TOKEN)
-    logging.info(f"Last saved token has been loaded: {GOOGLE_TOKEN[-10:]}")
-    if is_token_active:
-        logging.info("Token is still active and valid, quitting...")
-        sys.exit(0)
+    # GOOGLE_TOKEN = database.collection("credentials").document("google-tts").get().to_dict()["url"]
+    # is_token_active = test_audio_synthesis(GOOGLE_TOKEN)
+    # logging.info(f"Last saved token has been loaded: {GOOGLE_TOKEN[-10:]}")
+    # if is_token_active:
+    #     logging.info("Token is still active and valid, quitting...")
+    #     sys.exit(0)
 
     """ OPENAI-WHISPER SETUP """
     whisper_model_variant = "tiny"
