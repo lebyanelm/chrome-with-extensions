@@ -402,11 +402,12 @@ try:
 
     """ GOOGLE TTS ENDPOINT AND LAST SAVED TOKEN """
     GOOGLE_TTS_ENDPOINT = database.collection("credentials").document("google-tts").get().to_dict()["endpoint"]
-    is_token_active = test_audio_synthesis(GOOGLE_TTS_ENDPOINT)
-    logging.info(f"Last saved token has been loaded: {GOOGLE_TTS_ENDPOINT[-10:]}")
-    if is_token_active:
-        logging.info("Token is still active and valid, quitting...")
-        sys.exit(0)
+    while True:
+        is_token_active = test_audio_synthesis(GOOGLE_TTS_ENDPOINT)
+        logging.info(f"Last saved token has been loaded: {GOOGLE_TTS_ENDPOINT[-10:]}")
+        if is_token_active:
+            logging.info("Token is still active and valid, quitting...")
+            sys.exit(0)
 
     """ OPENAI-WHISPER SETUP """
     whisper_model_variant = "tiny"
